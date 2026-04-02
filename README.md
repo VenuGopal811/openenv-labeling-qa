@@ -170,13 +170,14 @@ python baseline.py
 
 ## Baseline Scores
 
-| Task | Model | Score |
-|------|-------|-------|
-| Easy (medical pairs) | gpt-4o-mini | TBD |
-| Medium (NLI) | gpt-4o-mini | TBD |
-| Hard (SCOTUS) | gpt-4o-mini | TBD |
+| Task | Model | Cumulative Score (10 steps) |
+|------|-------|-----------------------------|
+| Easy (medical pairs) | llama-3.1-8b-instant | 4.30 |
+| Medium (NLI) | llama-3.1-8b-instant | 2.00 |
+| Hard (SCOTUS) | llama-3.1-8b-instant | 4.90 |
+| **Overall Average** | | **3.73** |
 
-*Baseline scores will be updated after `baseline.py` is finalized.*
+*Scores represent cumulative reward over 10 steps per task. Maximum possible score per task is 10.0 (all correct with fixes). Scores above 0 indicate the agent performs better than random.*
 
 ---
 
