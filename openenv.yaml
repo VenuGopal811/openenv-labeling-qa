@@ -1,1 +1,91 @@
-# spec metadata
+name: labelsense-labeling-qa
+version: 1.0.0
+description: >
+  An OpenEnv environment where an AI agent audits AI-generated labels on
+  medical and legal text datasets. The agent identifies mislabeled examples,
+  flags ambiguous cases, and proposes corrections. Simulates a real MLOps
+  data quality workflow.
+
+tags:
+  - openenv
+  - data-labeling
+  - quality-assurance
+  - medical
+  - legal
+  - nlp
+
+author: VenuGopal811
+license: MIT
+
+observation_space:
+  type: object
+  fields:
+    example_id: string
+    task: string
+    input: object
+    ai_label: string
+    label_options: array
+    episode_step: integer
+    total_steps: integer
+
+action_space:
+  type: object
+  fields:
+    example_id: string
+    verdict:
+      type: string
+      enum: [correct, wrong, ambiguous]
+    proposed_label:
+      type: string
+      nullable: true
+    confidence:
+      type: float
+      min: 0.0
+      max: 1.0
+
+tasks:
+  - name: easy
+    description: Binary medical question pair similarity labeling. ~20% noisy labels.
+    difficulty: easy
+    dataset: curaihealth/medical_questions_pairs
+    label_type: binary
+    labels: ["0", "1"]
+    expected_score_range: [0.5, 1.0]
+
+  - name: medium
+    description: 3-class NLI labeling with systematic neutral bias noise.
+    difficulty: medium
+    dataset: snli
+    label_type: multiclass
+    labels: [entailment, neutral, contradiction]
+    expected_score_range: [0.2, 0.7]
+
+  - name: hard
+    description: 14-class SCOTUS legal issue area classification with confident wrong labels.
+    difficulty: hard
+    dataset: coastalcph/lex_glue (scotus)
+    label_type: multiclass
+    labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
+    expected_score_range: [-0.5, 0.5]
+
+endpoints:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
+  tasks: GET /tasks
+  grader: POST /grader
+  baseline: POST /baseline
+
+baseline:
+  model: llama-3.1-8b-instant
+  script: inference.py
+  scores:
+    easy: 4.30
+    medium: 2.00
+    hard: 4.90
+    average: 3.73
+
+runtime:
+  python: "3.11"
+  framework: fastapi
+  port: 7860
