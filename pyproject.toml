@@ -1,0 +1,18 @@
+[project]
+name = "labelsense-openenv"
+version = "1.0.0"
+description = "AI-Assisted Data Labeling QA environment"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "datasets",
+    "groq",
+    "openai",
+    "requests",
+    "openenv-core>=0.2.0"
+]
+
+[project.scripts]
+server = "server.app:main"
