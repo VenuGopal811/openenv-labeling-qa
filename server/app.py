@@ -22,7 +22,11 @@ class StepRequest(BaseModel):
     confidence: float = 0.8
 
 @app.post("/reset")
-def reset_endpoint(req: ResetRequest):
+def reset_endpoint(req: Optional[ResetRequest] = None):
+    # If the grader sends an empty body, use our default values
+    if req is None:
+        req = ResetRequest()
+        
     try:
         env = LabelingQAEnv(task=req.task, episode_length=req.episode_length)
     except ValueError as e:
