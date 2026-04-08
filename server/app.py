@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel
 from typing import Dict, Optional
 
@@ -22,8 +22,8 @@ class StepRequest(BaseModel):
     confidence: float = 0.8
 
 @app.post("/reset")
-def reset_endpoint(req: Optional[ResetRequest] = None):
-    # If the grader sends an empty body, use our default values
+def reset_endpoint(req: Optional[ResetRequest] = Body(default=None)):
+    # If the grader sends an empty body, null, or literally nothing
     if req is None:
         req = ResetRequest()
         
