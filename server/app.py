@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException, Body, Request
 from pydantic import BaseModel
 from typing import Dict, Optional
 
@@ -22,17 +22,28 @@ class StepRequest(BaseModel):
     confidence: float = 0.8
 
 @app.post("/reset")
-def reset_endpoint(req: Optional[ResetRequest] = Body(default=None)):
-    # If the grader sends an empty body, null, or literally nothing
-    if req is None:
-        req = ResetRequest()
+async def reset_endpoint(request: Request):
+    # 1. Safely try to read the raw JSON body
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+        
+    # 2. If the grader literally sent 'null', force it to an empty dictionary
+    if body is None:
+        body = {}
+        
+    # 3. Manually pull out our variables with safe defaults
+    task = body.get("task", "easy")
+    episode_length = body.get("episode_length", 10)
+    session_id = body.get("session_id", "default")
         
     try:
-        env = LabelingQAEnv(task=req.task, episode_length=req.episode_length)
+        env = LabelingQAEnv(task=task, episode_length=episode_length)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
         
-    envs[req.session_id] = env
+    envs[session_id] = env
     
     try:
         obs = env.reset()
@@ -40,7 +51,6 @@ def reset_endpoint(req: Optional[ResetRequest] = Body(default=None)):
         raise HTTPException(status_code=500, detail=str(e))
         
     return obs.model_dump() if hasattr(obs, 'model_dump') else obs.dict()
-
 @app.post("/step")
 def step_endpoint(req: StepRequest):
     if req.session_id not in envs:
