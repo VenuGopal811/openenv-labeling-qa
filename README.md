@@ -1,3 +1,13 @@
+---
+title: LabelSense OpenEnv
+emoji: 🏷️
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+---
+
+
 # 🏷️ LabelSense — AI-Assisted Data Labeling QA Environment
 
 > An OpenEnv-compliant environment where an AI agent audits AI-generated labels on medical and legal text, identifies mislabeled examples, flags ambiguous cases, and proposes corrections.
