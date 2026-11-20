@@ -13,6 +13,7 @@ class ResetRequest(BaseModel):
     task: str = "easy"
     episode_length: int = 10
     session_id: str = "default"
+    seed: int | None = None
 
 class StepRequest(BaseModel):
     session_id: str = "default"
@@ -37,16 +38,17 @@ async def reset_endpoint(request: Request):
     task = body.get("task", "easy")
     episode_length = body.get("episode_length", 10)
     session_id = body.get("session_id", "default")
-        
+    seed = body.get("seed")
+
     try:
         env = LabelingQAEnv(task=task, episode_length=episode_length)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-        
+
     envs[session_id] = env
-    
+
     try:
-        obs = env.reset()
+        obs = env.reset(seed=seed)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
         
@@ -123,6 +125,9 @@ def grader_endpoint(session_id: str = "default"):
         "session_id": session_id,
         "task": state.task,
         "cumulative_score": state.cumulative_score,
+        "accept_all_score": state.accept_all_score,
+        "oracle_score": state.oracle_score,
+        "skill": state.skill,
         "total_steps": state.total_steps,
         "done": state.done
     }

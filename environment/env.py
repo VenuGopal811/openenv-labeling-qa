@@ -6,6 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from environment.models import Observation, Action, Reward, StepResult, EpisodeState
 from environment.grader import grade
+from environment.scoring import accept_all_score, oracle_score, skill
 from data.loader import load_task1, load_task2, load_task3
 from environment.noise import inject_noise_task1, inject_noise_task2, inject_noise_task3
 
@@ -60,11 +61,13 @@ class LabelingQAEnv:
             total_steps=self.episode_length
         )
 
-    def reset(self) -> Observation:
+    def reset(self, seed: int | None = None) -> Observation:
         if self.episode_length > len(self.examples):
             raise ValueError("Episode length exceeds available examples.")
-            
-        self.current_examples = random.sample(self.examples, self.episode_length)
+
+        # A seed makes the episode's example draw reproducible.
+        rng = random.Random(seed) if seed is not None else random
+        self.current_examples = rng.sample(self.examples, self.episode_length)
         self.current_step = 0
         self.cumulative_score = 0.0
         self.done = False
@@ -108,12 +111,18 @@ class LabelingQAEnv:
         )
 
     def state(self) -> EpisodeState:
+        seen = self.current_examples[:self.current_step]
+        baseline = accept_all_score(self.task, seen)
+        best = oracle_score(self.task, seen)
         return EpisodeState(
             task=self.task,
             current_step=self.current_step,
             total_steps=self.episode_length,
             cumulative_score=self.cumulative_score,
-            done=self.done
+            done=self.done,
+            accept_all_score=baseline,
+            oracle_score=best,
+            skill=skill(self.cumulative_score, baseline, best),
         )
 
 

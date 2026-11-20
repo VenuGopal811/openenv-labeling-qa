@@ -1,7 +1,9 @@
-fastapi
-uvicorn
-pydantic
-datasets
-groq
-openai
-requests
+# Pinned to versions verified locally on 20 Nov 2026 (Python 3.12).
+# Unpinned installs broke the medium task when the Hub renamed "snli".
+fastapi==0.165.0
+uvicorn==0.54.0
+pydantic==2.14.4
+datasets==5.2.0
+groq==1.7.0
+openai==3.57.0
+requests==2.34.2

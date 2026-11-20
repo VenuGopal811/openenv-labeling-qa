@@ -45,3 +45,7 @@ class EpisodeState(BaseModel):
     total_steps: int
     cumulative_score: float
     done: bool
+    # Reference scores over the steps taken so far (see environment/scoring.py)
+    accept_all_score: float = 0.0
+    oracle_score: float = 0.0
+    skill: float | None = None
