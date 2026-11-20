@@ -95,7 +95,7 @@ def load_task1() -> list[dict]:
 
 # ---------------------------------------------------------------------------
 # Task 2 - NLI (3-class: entailment / neutral / contradiction)
-# Dataset: snli
+# Dataset: stanfordnlp/snli (the bare "snli" id no longer resolves on the Hub)
 # ---------------------------------------------------------------------------
 
 def load_task2() -> list[dict]:
@@ -109,8 +109,8 @@ def load_task2() -> list[dict]:
     where gold_label is "entailment", "neutral", or "contradiction".
     """
     try:
-        print("[Task 2] Loading snli ...")
-        ds = _load_hf_dataset("snli", split="train")
+        print("[Task 2] Loading stanfordnlp/snli ...")
+        ds = _load_hf_dataset("stanfordnlp/snli", split="train")
 
         # SNLI contains some unlabeled rows marked with label == -1
         ds = ds.filter(lambda x: x["label"] != -1)

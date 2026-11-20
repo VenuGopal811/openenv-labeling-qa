@@ -1,3 +1,9 @@
+# Flagging a noisy label earns FLAG_SCORE; proposing the gold label as well
+# earns the remaining FIX_BONUS, for a maximum of 1.0 per step.
+FLAG_SCORE = 0.7
+FIX_BONUS = 0.3
+
+
 def grade_task1(action: dict, example: dict) -> dict:
     verdict = action.get("verdict")
     proposed_label = action.get("proposed_label")
@@ -11,10 +17,11 @@ def grade_task1(action: dict, example: dict) -> dict:
         score = 0.3
         reason = "Partial credit for ambiguous (task 1 has no truly ambiguous cases)."
     elif is_noisy and verdict == "wrong":
-        score = 1.0
+        # Was 1.0 with a +0.5 bonus capped at 1.0, so the bonus never applied.
+        score = FLAG_SCORE
         reason = "Correctly identified noisy label."
         if proposed_label == gold_label_str:
-            score = min(1.0, score + 0.5)
+            score = FLAG_SCORE + FIX_BONUS
             reason = "Correctly identified noisy label and proposed the correct label."
     elif is_noisy and verdict == "correct":
         score = 0.0
@@ -45,10 +52,11 @@ def grade_task2(action: dict, example: dict) -> dict:
             score = -0.3
             reason = "Incorrectly labeled non-neutral case as ambiguous."
     elif is_noisy and verdict == "wrong":
-        score = 1.0
+        # Was 1.0 with a +0.5 bonus capped at 1.0, so the bonus never applied.
+        score = FLAG_SCORE
         reason = "Correctly identified noisy label."
         if proposed_label == gold_label_str:
-            score = min(1.0, score + 0.5)
+            score = FLAG_SCORE + FIX_BONUS
             reason = "Correctly identified noisy label and proposed the correct label."
     elif is_noisy and verdict == "correct":
         score = 0.0
@@ -76,10 +84,11 @@ def grade_task3(action: dict, example: dict) -> dict:
         score = 0.4
         reason = "Partial credit for ambiguous (legal categories genuinely overlap)."
     elif is_noisy and verdict == "wrong":
-        score = 1.0
+        # Was 1.0 with a +0.5 bonus capped at 1.0, so the bonus never applied.
+        score = FLAG_SCORE
         reason = "Correctly identified noisy label."
         if proposed_label == gold_label_str:
-            score = min(1.0, score + 0.5)
+            score = FLAG_SCORE + FIX_BONUS
             reason = "Correctly identified noisy label and proposed the correct label."
     elif is_noisy and verdict == "correct":
         if confidence > 0.8:
